@@ -1,8 +1,8 @@
-import { IOrder } from '../order';
+import { IOrder, OrderStatus } from '../order';
 import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateOrderDto implements IOrder {
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delievered';
+  status: OrderStatus;
 
   @IsNotEmpty({ message: 'Title cannot be empty.' })
   title: string;

@@ -3,13 +3,18 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
-import { IOrder } from '../order';
+import { IOrder, OrderStatus } from '../order';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity({ name: 'orders' })
 export class Order implements IOrder {
   @PrimaryGeneratedColumn()
   public id: number;
+
+  @ManyToOne(() => User, (user) => user.orders)
+  public userId: number;
 
   @Column({ unique: true })
   public title: string;
@@ -24,5 +29,5 @@ export class Order implements IOrder {
   price: number;
 
   @Column({ default: 'Pending' })
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delievered';
+  status: OrderStatus;
 }
