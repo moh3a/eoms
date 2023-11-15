@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import { OrderStatus } from './order';
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
   constructor(
     @InjectRepository(Order)
     private ordersRepository: Repository<Order>,
@@ -43,6 +45,26 @@ export class OrdersService {
       'Delievered',
     ];
     const order = await this.ordersRepository.findOneBy({ id });
+
+    if (order.status === 'Pending' && updateOrderDto.status === 'Cancelled') {
+    } else if (
+      order.status !== 'Pending' &&
+      updateOrderDto.status === 'Cancelled'
+    ) {
+      throw new HttpException(
+        `Cannot cancel order that is not pending.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    } else if (
+      order.status === 'Pending' &&
+      updateOrderDto.status !== 'Processing'
+    ) {
+      throw new HttpException(
+        `Cannot cancel order that is not pending.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const orderStatusIndex = OrderStatusArray.findIndex(
       (o) => o === order.status,
     );
@@ -56,6 +78,9 @@ export class OrdersService {
         updateOrderDto,
       );
       if (updatedOrder.affected) {
+        this.logger.log(
+          `Order [id: ${id}] status was successfully updated. From ${order.status} to ${updateOrderDto.status}`,
+        );
         return { ...order, status: updateOrderDto.status };
       }
       throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
