@@ -5,6 +5,14 @@ export type OrderStatus =
   | 'Delievered'
   | 'Cancelled';
 
+export const orderStatus: OrderStatus[] = [
+  'Pending',
+  'Processing',
+  'Shipped',
+  'Delievered',
+  'Cancelled',
+];
+
 export interface IOrder {
   status: OrderStatus;
   title: string;

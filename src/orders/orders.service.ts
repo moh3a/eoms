@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderStatus } from './dto/order.type';
+import { orderStatus } from './dto/order.type';
 import { Order } from './entities/order.entity';
 
 @Injectable()
@@ -39,19 +39,10 @@ export class OrdersService {
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto) {
-    const OrderStatusArray: OrderStatus[] = [
-      'Pending',
-      'Processing',
-      'Shipped',
-      'Delievered',
-      'Cancelled',
-    ];
     const order = await this.ordersRepository.findOneBy({ id });
-    const orderStatusIndex = OrderStatusArray.findIndex(
-      (o) => o === order.status,
-    );
+    const orderStatusIndex = orderStatus.findIndex((o) => o === order.status);
     const updatedOrderStatusIndex = updateOrderDto.status
-      ? OrderStatusArray.findIndex((o) => o === updateOrderDto.status)
+      ? orderStatus.findIndex((o) => o === updateOrderDto.status)
       : orderStatusIndex;
 
     if (!order) {
@@ -85,7 +76,7 @@ export class OrdersService {
     } else {
       if (
         orderStatusIndex >= updatedOrderStatusIndex - 1 &&
-        orderStatusIndex < OrderStatusArray.length - 1
+        orderStatusIndex < orderStatus.length - 1
       ) {
         const updatedOrder = await this.ordersRepository.update(
           { id },

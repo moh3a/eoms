@@ -1,6 +1,6 @@
 {
   "name": "eoms",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "moh3a",
   "private": true,
@@ -21,6 +21,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/swagger": "^7.1.16",
     "@nestjs/typeorm": "^10.0.1",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
