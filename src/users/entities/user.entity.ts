@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IUser } from '../user';
+
+import { IUser } from '../dto/user.type';
 import { Order } from 'src/orders/entities/order.entity';
 
 @Entity({ name: 'users' })

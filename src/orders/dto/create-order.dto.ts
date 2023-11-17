@@ -1,5 +1,5 @@
-import { IOrder, OrderStatus } from '../order';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IOrder, OrderStatus } from './order.type';
 
 export class CreateOrderDto implements IOrder {
   status: OrderStatus;
@@ -7,8 +7,8 @@ export class CreateOrderDto implements IOrder {
   @IsNotEmpty({ message: 'Title cannot be empty.' })
   title: string;
 
-  @IsDate()
-  createdAt: string;
+  // @IsDate()
+  // createdAt: string;
 
   @IsString()
   description: string;

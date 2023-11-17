@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { IUser } from '../user';
+import { IUser } from './user.type';
 
 export class CreateUserDto implements IUser {
   @IsNotEmpty({ message: 'Name cannot be empty.' })

@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { InjectRepository } from '@nestjs/typeorm';
+import { OrderStatus } from './dto/order.type';
 import { Order } from './entities/order.entity';
-import { Repository } from 'typeorm';
-import { OrderStatus } from './order';
 
 @Injectable()
 export class OrdersService {
@@ -43,10 +44,31 @@ export class OrdersService {
       'Processing',
       'Shipped',
       'Delievered',
+      'Cancelled',
     ];
     const order = await this.ordersRepository.findOneBy({ id });
+    const orderStatusIndex = OrderStatusArray.findIndex(
+      (o) => o === order.status,
+    );
+    const updatedOrderStatusIndex = updateOrderDto.status
+      ? OrderStatusArray.findIndex((o) => o === updateOrderDto.status)
+      : orderStatusIndex;
 
-    if (order.status === 'Pending' && updateOrderDto.status === 'Cancelled') {
+    if (!order) {
+      throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+    } else if (
+      order.status === 'Pending' &&
+      updateOrderDto.status === 'Cancelled'
+    ) {
+      // todo: cancel order
+    } else if (
+      order.status === 'Pending' &&
+      updateOrderDto.status !== 'Processing'
+    ) {
+      throw new HttpException(
+        `Cannot update order that is pending.`,
+        HttpStatus.BAD_REQUEST,
+      );
     } else if (
       order.status !== 'Pending' &&
       updateOrderDto.status === 'Cancelled'
@@ -55,40 +77,33 @@ export class OrdersService {
         `Cannot cancel order that is not pending.`,
         HttpStatus.BAD_REQUEST,
       );
-    } else if (
-      order.status === 'Pending' &&
-      updateOrderDto.status !== 'Processing'
-    ) {
+    } else if (order.status === 'Cancelled') {
       throw new HttpException(
-        `Cannot cancel order that is not pending.`,
+        `Cannot update order that is cancelled.`,
         HttpStatus.BAD_REQUEST,
       );
-    }
-
-    const orderStatusIndex = OrderStatusArray.findIndex(
-      (o) => o === order.status,
-    );
-    const updatedOrderStatusIndex = updateOrderDto.status
-      ? OrderStatusArray.findIndex((o) => o === updateOrderDto.status)
-      : orderStatusIndex;
-
-    if (orderStatusIndex >= updatedOrderStatusIndex - 1) {
-      const updatedOrder = await this.ordersRepository.update(
-        { id },
-        updateOrderDto,
-      );
-      if (updatedOrder.affected) {
-        this.logger.log(
-          `Order [id: ${id}] status was successfully updated. From ${order.status} to ${updateOrderDto.status}`,
+    } else {
+      if (
+        orderStatusIndex >= updatedOrderStatusIndex - 1 &&
+        orderStatusIndex < OrderStatusArray.length - 1
+      ) {
+        const updatedOrder = await this.ordersRepository.update(
+          { id },
+          updateOrderDto,
         );
-        return { ...order, status: updateOrderDto.status };
-      }
-      throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+        if (updatedOrder.affected) {
+          this.logger.log(
+            `Order [id: ${id}] status was successfully updated. From ${order.status} to ${updateOrderDto.status}`,
+          );
+          return { ...order, status: updateOrderDto.status };
+        }
+        throw new HttpException('Order not found', HttpStatus.NOT_FOUND);
+      } else
+        throw new HttpException(
+          `Cannot update status from ${order.status} to ${updateOrderDto.status}`,
+          HttpStatus.BAD_REQUEST,
+        );
     }
-    throw new HttpException(
-      `Cannot update status from ${order.status} to ${updateOrderDto.status}`,
-      HttpStatus.BAD_REQUEST,
-    );
   }
 
   async remove(id: number) {

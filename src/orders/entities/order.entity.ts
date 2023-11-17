@@ -5,7 +5,8 @@ import {
   CreateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { IOrder, OrderStatus } from '../order';
+
+import { IOrder, OrderStatus } from '../dto/order.type';
 import { User } from 'src/users/entities/user.entity';
 
 @Entity({ name: 'orders' })

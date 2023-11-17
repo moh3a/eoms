@@ -10,5 +10,4 @@ export interface IOrder {
   title: string;
   description: string;
   price: number;
-  createdAt: string;
 }
