@@ -12,12 +12,10 @@ pnpm start
 ```
 
 - Server should be running in `http://localhost:3000`
-- While the server is running, the OpenAPI documentation can be found when navigating in a browser to `http://localhost:3000/api`
+- While the server is running, the OpenAPI documentation can be found when navigating in a browser to `http://localhost:3000/docs`
 
 ## Todo
 
-- Implement an endpoint to search for orders by their title.
-- Return a list of orders that match the search query.
 - Only authenticated users should be able to create, update, and delete orders.
 - Users should only be able to update and delete their own orders.
 - Include meaningful comments in code.

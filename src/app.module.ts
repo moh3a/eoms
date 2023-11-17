@@ -9,6 +9,7 @@ import { envSchema } from './env/env';
 import { OrdersModule } from './orders/orders.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -16,11 +17,12 @@ import { UsersModule } from './users/users.module';
       validate: (env) => envSchema.parse(env),
       isGlobal: true,
     }),
-    OrdersModule,
     EnvModule,
     DatabaseModule,
-    AuthModule,
+    OrdersModule,
+    SearchModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

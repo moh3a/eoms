@@ -1,8 +1,9 @@
-import { OrderStatus, orderStatus } from './order.type';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class UpdateOrderDto {
+import { IOrder, OrderStatus, orderStatus } from './order.type';
+
+export class UpdateOrderDto implements IOrder {
   @ApiProperty({ enum: orderStatus, example: 'Pending' })
   status: OrderStatus;
 
