@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './database/database.module';
 import { EnvModule } from './env/env.module';
 import { envSchema } from './env/env';
 import { OrdersModule } from './orders/orders.module';
@@ -18,7 +17,6 @@ import { SearchModule } from './search/search.module';
       isGlobal: true,
     }),
     EnvModule,
-    DatabaseModule,
     OrdersModule,
     SearchModule,
     UsersModule,

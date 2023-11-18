@@ -3,12 +3,30 @@
 ## Getting Started
 
 - Create a `.env` file;
-- Copy `.env.example` into `.env` and fill in the required fields for the Postgres database connection;
+- Copy `.env.example` into `.env` and fill in the required fields for the database connection. By default, SQLite is used, if you want to change it, provide the connection URL in `.env` and change `provider` field in `./prisma/schema.prisma` accordingly;
+- Seed your database by running
+
+```sh
+node ./prisma/seed.cjs
+```
+
+- Generate a JWT secret by running
+
+```sh
+openssl rand -base64 32
+```
+
+- Generate the appropriate types by running
+
+```sh
+npx prisma generate
+```
+
 - Start the server
 
 ```sh
 pnpm start
-# or npm start
+# or npm run start
 ```
 
 - Server should be running in `http://localhost:3000`
@@ -16,7 +34,5 @@ pnpm start
 
 ## Todo
 
-- Only authenticated users should be able to create, update, and delete orders.
-- Users should only be able to update and delete their own orders.
 - Include meaningful comments in code.
-- Implement pagination for the list of all orders endpoint to handle a large number of orders.
+- Fix updating orders workflow.

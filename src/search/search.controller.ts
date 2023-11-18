@@ -1,4 +1,4 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, Query } from '@nestjs/common';
 
 import { SearchService } from './search.service';
 import { SearchDto } from './search.dto';
@@ -8,7 +8,15 @@ export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Post()
-  update(@Body() searchDto: SearchDto) {
-    return this.searchService.searchByTitle(searchDto);
+  search(
+    @Body() searchDto: SearchDto,
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+  ) {
+    return this.searchService.searchByTitle(
+      searchDto,
+      Number(skip),
+      Number(take),
+    );
   }
 }

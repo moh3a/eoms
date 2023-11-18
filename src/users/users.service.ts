@@ -1,56 +1,95 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { PrismaService } from 'src/prisma.service';
+import { MESSAGES } from 'src/constants';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  constructor(private db: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const newUser = this.usersRepository.create(createUserDto);
-    await this.usersRepository.save(newUser);
-    return newUser;
+    try {
+      const newUser = await this.db.user.create({
+        data: createUserDto,
+        select: { id: true, name: true, orders: true },
+      });
+      return newUser;
+    } catch (error) {
+      throw new HttpException(MESSAGES.ERROR_OCCURED, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findAll() {
-    const users = await this.usersRepository.find();
-    if (users) {
-      return users;
+    try {
+      const users = await this.db.user.findMany({
+        select: { id: true, name: true, orders: true },
+      });
+      if (users) {
+        return users;
+      }
+      throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      throw new HttpException(
+        MESSAGES.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
   async findOne(id: number) {
-    const user = await this.usersRepository.findOneBy({ id });
-    if (user) {
-      return user;
+    try {
+      const user = await this.db.user.findUnique({
+        where: { id },
+        select: { id: true, name: true, orders: true },
+      });
+      if (user) {
+        return user;
+      }
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      throw new HttpException(
+        MESSAGES.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const userUpdate = await this.usersRepository.update({ id }, updateUserDto);
-    if (userUpdate.affected) {
-      return this.findOne(id);
+    try {
+      const userUpdate = await this.db.user.update({
+        where: { id },
+        data: updateUserDto,
+        select: { id: true, name: true, orders: true },
+      });
+      if (userUpdate) {
+        return this.findOne(id);
+      }
+      throw new HttpException(
+        `Unable to update user info.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    } catch (error) {
+      throw new HttpException(
+        MESSAGES.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    throw new HttpException(
-      `Unable to update user info.`,
-      HttpStatus.BAD_REQUEST,
-    );
   }
 
   async remove(id: number) {
-    const userDeleted = await this.usersRepository.delete(id);
-    if (userDeleted.affected) {
-      return HttpStatus.OK;
+    try {
+      const userDeleted = await this.db.user.delete({ where: { id } });
+      if (userDeleted) {
+        return HttpStatus.OK;
+      }
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      throw new HttpException(
+        MESSAGES.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }

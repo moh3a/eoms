@@ -12,10 +12,3 @@ export const orderStatus: OrderStatus[] = [
   'Delievered',
   'Cancelled',
 ];
-
-export interface IOrder {
-  status: OrderStatus;
-  title: string;
-  description: string;
-  price: number;
-}

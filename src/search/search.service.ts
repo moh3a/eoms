@@ -1,18 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { SearchDto } from './search.dto';
-import { Order } from 'src/orders/entities/order.entity';
+import { PrismaService } from 'src/prisma.service';
+import { DEFAULT_PAGE_SIZE, MESSAGES } from 'src/constants';
 
 @Injectable()
 export class SearchService {
-  constructor(
-    @InjectRepository(Order)
-    private ordersRepository: Repository<Order>,
-  ) {}
+  constructor(private db: PrismaService) {}
 
-  searchByTitle(searchDto: SearchDto) {
-    return this.ordersRepository.findBy({ title: searchDto.title });
+  searchByTitle(searchDto: SearchDto, skip?: number, take?: number) {
+    try {
+      return this.db.order.findMany({
+        where: { title: { contains: searchDto.title } },
+        skip: !isNaN(skip) ? skip : 0,
+        take: !isNaN(take) ? take : DEFAULT_PAGE_SIZE,
+      });
+    } catch (error) {
+      throw new HttpException(
+        MESSAGES.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

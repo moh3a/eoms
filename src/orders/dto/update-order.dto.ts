@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Order } from '@prisma/client';
 
-import { IOrder, OrderStatus, orderStatus } from './order.type';
+import { OrderStatus, orderStatus } from './order';
 
-export class UpdateOrderDto implements IOrder {
+export class UpdateOrderDto implements Partial<Order> {
   @ApiProperty({ enum: orderStatus, example: 'Pending' })
   status: OrderStatus;
 

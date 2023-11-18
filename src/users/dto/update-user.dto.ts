@@ -1,15 +1,15 @@
 import { IsNotEmpty } from 'class-validator';
 import { Exclude } from 'class-transformer';
-import { IUser } from './user.type';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 
-export class UpdateUserDto implements IUser {
+export class UpdateUserDto implements Partial<User> {
   @ApiProperty({ example: 'username' })
   @IsNotEmpty({ message: 'Name cannot be empty.' })
-  name: string;
+  name?: string;
 
   @ApiProperty({ example: '******' })
   @IsNotEmpty({ message: 'Password cannot be empty.' })
   @Exclude()
-  password: string;
+  password?: string;
 }
