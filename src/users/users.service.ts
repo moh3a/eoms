@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma.service';
-import { MESSAGES } from 'src/constants';
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { PrismaService } from "src/prisma.service";
+import { MESSAGES } from "src/constants";
+import { hashPassword } from "src/utils";
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
+      createUserDto.password = hashPassword(createUserDto.password);
       const newUser = await this.db.user.create({
         data: createUserDto,
         select: { id: true, name: true, orders: true },
@@ -29,7 +31,7 @@ export class UsersService {
       if (users) {
         return users;
       }
-      throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
+      throw new HttpException("Users not found", HttpStatus.NOT_FOUND);
     } catch (error) {
       throw new HttpException(
         MESSAGES.INTERNAL_SERVER_ERROR,
@@ -47,7 +49,7 @@ export class UsersService {
       if (user) {
         return user;
       }
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     } catch (error) {
       throw new HttpException(
         MESSAGES.INTERNAL_SERVER_ERROR,
@@ -84,7 +86,7 @@ export class UsersService {
       if (userDeleted) {
         return HttpStatus.OK;
       }
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException("User not found", HttpStatus.NOT_FOUND);
     } catch (error) {
       throw new HttpException(
         MESSAGES.INTERNAL_SERVER_ERROR,

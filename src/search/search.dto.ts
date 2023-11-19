@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class SearchDto {
-  @ApiProperty({ example: 'The order title' })
-  title: string;
+  @ApiProperty({ example: "The order title" })
+  title!: string;
 }

@@ -14,7 +14,7 @@ model Order {
   title       String   @unique
   createdAt   DateTime @default(now())
   description String?
-  price       Int
+  price       Int?
   status      String   @default("Pending")
 }
 

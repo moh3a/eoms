@@ -1,8 +1,10 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
-import { AppService } from './app.service';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { AuthService } from './auth/auth.service';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, UseGuards, Request } from "@nestjs/common";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
+
+import { AppService } from "./app.service";
+import { LocalAuthGuard } from "./auth/local-auth.guard";
+import { AuthService } from "./auth/auth.service";
+import { RequestForUnauthenticatedGuest } from "./auth/auth";
 
 @Controller()
 export class AppController {
@@ -18,16 +20,16 @@ export class AppController {
 
   @ApiBody({
     required: true,
-    description: 'Provide username and password for authentication.',
-    schema: { example: { username: 'moh3a', password: '******' } },
+    description: "Provide username and password for authentication.",
+    schema: { example: { username: "moh3a", password: "******" } },
   })
   @ApiResponse({
     description:
-      'Returns the JWT access token to provide in API routes that require authorization.',
+      "Returns the JWT access token to provide in API routes that require authorization.",
   })
   @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
-  async login(@Request() req) {
+  @Post("auth/login")
+  async login(@Request() req: RequestForUnauthenticatedGuest) {
     return this.authService.login(req.user);
   }
 }

@@ -9,19 +9,16 @@ import {
   UseGuards,
   Request,
   Query,
-  Logger,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { RequestForAuthenticatedUser } from 'src/auth/auth';
+import { OrdersService } from "./orders.service";
+import { CreateOrderDto } from "./dto/create-order.dto";
+import { UpdateOrderDto } from "./dto/update-order.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RequestForAuthenticatedUser } from "src/auth/auth";
 
-@Controller('orders')
+@Controller("orders")
 export class OrdersController {
-  private readonly logger = new Logger(OrdersController.name);
-
   constructor(private readonly ordersService: OrdersService) {}
 
   @UseGuards(JwtAuthGuard)
@@ -34,28 +31,28 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(@Query('skip') skip?: number, @Query('take') take?: number) {
-    return this.ordersService.findAll(+skip, +take);
+  findAll(@Query("skip") skip?: number, @Query("take") take?: number) {
+    return this.ordersService.findAll(Number(skip), Number(take));
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.ordersService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
+  @Patch(":id")
   update(
     @Request() req: RequestForAuthenticatedUser,
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
     return this.ordersService.update(req.user.userId, +id, updateOrderDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  remove(@Request() req: RequestForAuthenticatedUser, @Param('id') id: string) {
+  @Delete(":id")
+  remove(@Request() req: RequestForAuthenticatedUser, @Param("id") id: string) {
     return this.ordersService.remove(req.user.userId, +id);
   }
 }
